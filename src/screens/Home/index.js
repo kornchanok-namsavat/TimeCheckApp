@@ -3,7 +3,6 @@ import {ScrollView, Text,View} from 'react-native';
 import { useStoreState , useStoreActions } from 'easy-peasy'
 
 const Home=()=>{
-    const userToken = useStoreState(state => state.userToken);
 
     return ( 
         <ScrollView>

@@ -2,17 +2,32 @@ import React from 'react';
 import {ScrollView, Text,View} from 'react-native';
 import { useStoreState , useStoreActions } from 'easy-peasy'
 
+async function ExecuteQuery(sql, params = []){
+    return await new Promise((resolve, reject) => {
+      db.transaction((trans) => {
+        trans.executeSql(sql, params, (trans, results) => {
+          resolve(results);
+        },
+          (error) => {
+            console.log(error)
+            reject(error);
+          });
+      });
+    });
+  };
+
 const LogOut=()=>{
-    const isLoggedIn = useStoreState(state => state.isLoggedIn);
     const isLoggedInChange = useStoreActions(actions => actions.isLoggedInChange);
-    const userEmail = useStoreState(state => state.userEmail);
     const userEmailChange = useStoreActions(actions => actions.userEmailChange);
-    const userToken = useStoreState(state => state.userToken);
     const userTokenChange = useStoreActions(actions => actions.userTokenChange);
 
-    isLoggedInChange(false);
+    ExecuteQuery('DELETE FROM LogInCache',[])
     userEmailChange("");
     userTokenChange("");
+    isLoggedInChange(false);
+
+
+    
     return null
     //return (
     //    <ScrollView>

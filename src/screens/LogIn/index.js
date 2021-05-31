@@ -6,31 +6,6 @@ import { openDatabase } from 'react-native-sqlite-storage';
 import SQLite from 'react-native-sqlite-storage'
 
 
-//db = SQLite.openDatabase(
-//    {
-//      name: 'SQLite',
-//      //createFromLocation: '..\\..\\..\\android\\app\\src\\main\\assets\\www\\SQLite.db',
-//      createFromLocation: 1,
-//    },
-//    () => { console.log(db)},
-//    error => {
-//      console.log("ERROR: " + error);
-//    }
-//  );
-
-//var  db = openDatabase({name: 'SQLite.db'});
-
-//const ExecuteQuery = (sql, params = []) => new Promise((resolve, reject) => {
-//  db.transaction((trans) => {
-//    trans.executeSql(sql, params, (trans, results) => {
-//      resolve(results);
-//    },
-//      (error) => {
-//        reject(error);
-//      });
-//  });
-//});
-
 async function ExecuteQuery(sql, params = []){
   return await new Promise((resolve, reject) => {
     db.transaction((trans) => {
@@ -44,6 +19,14 @@ async function ExecuteQuery(sql, params = []){
     });
   });
 };
+
+function getData (x){
+  var xrow = x.rows;
+  for (let i = 0; i < xrow.length; i++) {
+    var item = xrow.item(i);
+    console.log(item);
+  }
+}
 
 
 const LogIn=()=>{
@@ -93,6 +76,10 @@ const LogIn=()=>{
                                     console.log(res);
                                     userEmailChange(Email);
                                     userTokenChange(res.data.access_token);
+
+                                    ExecuteQuery('CREATE TABLE IF NOT EXISTS LogInCache (UserEmail TEXT,UserToken TEXT)',[]);
+                                    ExecuteQuery('INSERT INTO LogInCache (UserEmail,UserToken) VALUES (?,?)',[Email,res.data.access_token])
+
                                     isLoggedInChange(true);
                                     
                                 }).catch((error) =>{
@@ -104,17 +91,32 @@ const LogIn=()=>{
                         }}
                     />
                 </View>
+                {/*
                 <View style={styles.Button} >
-                    <Button title="TestDB" onPress={()=>{
+                    <Button title="InsertTestDB" onPress={()=>{
 
-                        //let prep = ExecuteQuery('CREATE TABLE IF NOT EXISTS LogInCache (UserEmail TEXT,UserToken TEXT)',[]);
-                        //let prep2 = ExecuteQuery('INSERT INTO LogInCache (UserEmail,UserToken) VALUES (?,?)',["TestEmail","TestToken"]); 
-                        let res = ExecuteQuery('SELECT * FROM LogInCache',[]);
-                        console.log(res);
+                        ExecuteQuery('CREATE TABLE IF NOT EXISTS LogInCache (UserEmail TEXT,UserToken TEXT)',[]);
+                        ExecuteQuery('INSERT INTO LogInCache (UserEmail,UserToken) VALUES (?,?)',["TestEmail1","TestToken1"]);                     
 
                     }}/>
                 </View>
+                <View style={styles.Button} >
+                    <Button title="DeleteTestDB" onPress={()=>{
 
+                        ExecuteQuery('CREATE TABLE IF NOT EXISTS LogInCache (UserEmail TEXT,UserToken TEXT)',[]);
+                        ExecuteQuery('DELETE FROM LogInCache',[]); 
+                      
+                    }}/>
+                </View>
+                <View style={styles.Button} >
+                    <Button title="SelectTestDB" onPress={()=>{
+
+                        ExecuteQuery('CREATE TABLE IF NOT EXISTS LogInCache (UserEmail TEXT,UserToken TEXT)',[]);
+                        ExecuteQuery('SELECT * FROM LogInCache',[]).then(x=> getData(x))                        
+
+                    }}/>
+                </View>
+                  */}
             </View>
         </ScrollView>
     );
