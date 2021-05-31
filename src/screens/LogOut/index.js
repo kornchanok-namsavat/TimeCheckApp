@@ -13,14 +13,15 @@ const LogOut=()=>{
     isLoggedInChange(false);
     userEmailChange("");
     userTokenChange("");
-    return (
-        <ScrollView>
-            <View>
-                <Text/>
-                <Text style={{textAlign:"center"}}>This is Log out screen</Text>
-            </View>
-        </ScrollView>
-    );
+    return null
+    //return (
+    //    <ScrollView>
+    //        <View>
+    //            <Text/>
+    //            <Text style={{textAlign:"center"}}>This is Log out screen</Text>
+    //        </View>
+    //    </ScrollView>
+    //);
 };
 
 export default LogOut;

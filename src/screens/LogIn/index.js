@@ -2,9 +2,52 @@ import React from 'react';
 import {ScrollView , StyleSheet, Text,View,TextInput , Button ,Alert} from 'react-native';
 import { useStoreState , useStoreActions } from 'easy-peasy'
 import axios from 'axios';
+import { openDatabase } from 'react-native-sqlite-storage';
+import SQLite from 'react-native-sqlite-storage'
+
+
+//db = SQLite.openDatabase(
+//    {
+//      name: 'SQLite',
+//      //createFromLocation: '..\\..\\..\\android\\app\\src\\main\\assets\\www\\SQLite.db',
+//      createFromLocation: 1,
+//    },
+//    () => { console.log(db)},
+//    error => {
+//      console.log("ERROR: " + error);
+//    }
+//  );
+
+//var  db = openDatabase({name: 'SQLite.db'});
+
+//const ExecuteQuery = (sql, params = []) => new Promise((resolve, reject) => {
+//  db.transaction((trans) => {
+//    trans.executeSql(sql, params, (trans, results) => {
+//      resolve(results);
+//    },
+//      (error) => {
+//        reject(error);
+//      });
+//  });
+//});
+
+async function ExecuteQuery(sql, params = []){
+  return await new Promise((resolve, reject) => {
+    db.transaction((trans) => {
+      trans.executeSql(sql, params, (trans, results) => {
+        resolve(results);
+      },
+        (error) => {
+          console.log(error)
+          reject(error);
+        });
+    });
+  });
+};
 
 
 const LogIn=()=>{
+
     const isLoggedIn = useStoreState(state => state.isLoggedIn);
     const isLoggedInChange = useStoreActions(actions => actions.isLoggedInChange);
     const userEmail = useStoreState(state => state.userEmail);
@@ -51,6 +94,7 @@ const LogIn=()=>{
                                     userEmailChange(Email);
                                     userTokenChange(res.data.access_token);
                                     isLoggedInChange(true);
+                                    
                                 }).catch((error) =>{
                                     console.log("Api call error");
                                     Alert.alert("Invalid Username or Password");
@@ -59,6 +103,16 @@ const LogIn=()=>{
 
                         }}
                     />
+                </View>
+                <View style={styles.Button} >
+                    <Button title="TestDB" onPress={()=>{
+
+                        //let prep = ExecuteQuery('CREATE TABLE IF NOT EXISTS LogInCache (UserEmail TEXT,UserToken TEXT)',[]);
+                        //let prep2 = ExecuteQuery('INSERT INTO LogInCache (UserEmail,UserToken) VALUES (?,?)',["TestEmail","TestToken"]); 
+                        let res = ExecuteQuery('SELECT * FROM LogInCache',[]);
+                        console.log(res);
+
+                    }}/>
                 </View>
 
             </View>

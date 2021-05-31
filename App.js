@@ -9,7 +9,19 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import AppNavContainer from './src/navigations';
 import { createStore , StoreProvider , action } from 'easy-peasy';
+import SQLite from 'react-native-sqlite-storage';
+//import SQLite from 'react-native-sqlite-2';
 
+global.db = SQLite.openDatabase(
+  {
+    name: 'SQLite',
+    createFromLocation: '~/SQLite.db',
+  },
+  () => { console.log("DB opened"); },
+  error => {
+    console.log("ERROR: " + error);
+  }
+);
 
 const App = () => {
 

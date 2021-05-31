@@ -12,6 +12,10 @@ target 'MyApp2' do
     :hermes_enabled => false
   )
 
+  pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
+
+  pod 'RNSqlite2', :path => '../node_modules/react-native-sqlite-2'
+
   target 'MyApp2Tests' do
     inherit! :complete
     # Pods for testing
