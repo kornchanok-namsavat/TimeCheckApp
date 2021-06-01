@@ -11,6 +11,10 @@ import AppNavContainer from './src/navigations';
 import { createStore , StoreProvider , action } from 'easy-peasy';
 //import SQLite from 'react-native-sqlite-storage';
 import SQLite from 'react-native-sqlite-2';
+import {LogBox } from 'react-native';
+//LogBox.ignoreLogs(['Reanimated 2']);
+//LogBox.ignoreLogs(['Warning: ...']); // Ignore log notification by message
+LogBox.ignoreAllLogs();//Ignore all log notifications
 
 global.db = SQLite.openDatabase(
   {

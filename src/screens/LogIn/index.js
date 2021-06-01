@@ -73,7 +73,7 @@ const LogIn=()=>{
 
                             axios.post(`https://login.microsoftonline.com/57b9ca39-f573-430f-a7ac-0ef5e372b501/oauth2/v2.0/token`,postData)
                                 .then(res => {
-                                    console.log(res);
+                                    //console.log(res);
                                     userEmailChange(Email);
                                     userTokenChange(res.data.access_token);
 

@@ -16,27 +16,23 @@ async function ExecuteQuery(sql, params = []){
     });
   };
 
+async function ClearCache(){
+  const isLoggedInChange = useStoreActions(actions => actions.isLoggedInChange);
+  const userEmailChange = useStoreActions(actions => actions.userEmailChange);
+  const userTokenChange = useStoreActions(actions => actions.userTokenChange);
+
+  await  ExecuteQuery('DELETE FROM LogInCache',[])
+  await userEmailChange("");
+  await userTokenChange("");
+  await isLoggedInChange(false);
+   
+}
+
 const LogOut=()=>{
-    const isLoggedInChange = useStoreActions(actions => actions.isLoggedInChange);
-    const userEmailChange = useStoreActions(actions => actions.userEmailChange);
-    const userTokenChange = useStoreActions(actions => actions.userTokenChange);
 
-    ExecuteQuery('DELETE FROM LogInCache',[])
-    userEmailChange("");
-    userTokenChange("");
-    isLoggedInChange(false);
+  ClearCache()
+  return null
 
-
-    
-    return null
-    //return (
-    //    <ScrollView>
-    //        <View>
-    //            <Text/>
-    //            <Text style={{textAlign:"center"}}>This is Log out screen</Text>
-    //        </View>
-    //    </ScrollView>
-    //);
 };
 
 export default LogOut;
