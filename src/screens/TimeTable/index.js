@@ -16,6 +16,7 @@ function getData(EmID,onChangeSRA){
         
             if(res.data.ResponseText=="ไม่พบรายการ"){
                 console.log("ไม่พบรายการ")
+                Alert.alert("ไม่พบรายการ โปรดตรวจสอบ \nการเชื่อมต่อและลองใหม่อีกครั้ง")
             }
             else{
                 console.log(JSON.parse(res.data.ResponseText))

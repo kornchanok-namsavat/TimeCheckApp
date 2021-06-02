@@ -2,6 +2,7 @@ import React from 'react';
 import {ScrollView, Text,View} from 'react-native';
 import { useStoreState , useStoreActions } from 'easy-peasy'
 
+
 const Profile=()=>{
 
     const isLoggedIn = useStoreState(state => state.isLoggedIn);
