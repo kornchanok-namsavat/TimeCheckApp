@@ -69,7 +69,7 @@ const LogIn=()=>{
                         title="Log In"
                         onPress={() => {
 
-                            const postData = "userName=" + Email + "&password=" + passWord + "&grant_type=password&client_id=fd866b5d-eadf-412e-b6e8-78968cbf3da8" + "&client_secret=2~Pnm.v1WlIkt-OJ2S~9I0ERl6Jl1wz5NF&scope=https://graph.microsoft.com/Calendars.ReadWrite.Shared"; 
+                            const postData = "userName=" + Email + "&password=" + passWord + "&grant_type=password&client_id=fd866b5d-eadf-412e-b6e8-78968cbf3da8" + "&client_secret=2~Pnm.v1WlIkt-OJ2S~9I0ERl6Jl1wz5NF&scope=https://graph.microsoft.com/User.Read"; 
 
                             axios.post(`https://login.microsoftonline.com/57b9ca39-f573-430f-a7ac-0ef5e372b501/oauth2/v2.0/token`,postData)
                                 .then(res => {

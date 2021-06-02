@@ -20,10 +20,12 @@ async function ClearCache(){
   const isLoggedInChange = useStoreActions(actions => actions.isLoggedInChange);
   const userEmailChange = useStoreActions(actions => actions.userEmailChange);
   const userTokenChange = useStoreActions(actions => actions.userTokenChange);
+  const EmIDChange = useStoreActions(actions => actions.EmIDChange);
 
-  await  ExecuteQuery('DELETE FROM LogInCache',[])
+  await ExecuteQuery('DELETE FROM LogInCache',[])
   await userEmailChange("");
   await userTokenChange("");
+  await EmIDChange("");
   await isLoggedInChange(false);
    
 }

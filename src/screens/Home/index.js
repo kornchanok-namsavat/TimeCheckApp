@@ -2,7 +2,9 @@ import React from 'react';
 import {ScrollView, Text,View} from 'react-native';
 import { useStoreState , useStoreActions } from 'easy-peasy'
 
+
 const Home=()=>{
+
 
     return ( 
         <ScrollView>

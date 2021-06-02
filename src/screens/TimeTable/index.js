@@ -5,114 +5,87 @@ import axios from 'axios';
 import { DataTable } from 'react-native-paper';
 
 
+
+function getData(EmID,onChangeSRA){
+    if(EmID!=""){
+        
+        let api2 = "http://api-intranet.dga.or.th/absentv1/GetAbsentDate.ashx?empID="+EmID
+        //console.log("Now EmID is : "+EmID)
+        console.log("Try to connect api : "+api2)
+        axios.get(api2).then(res =>{
+        
+            if(res.data.ResponseText=="ไม่พบรายการ"){
+                console.log("ไม่พบรายการ")
+            }
+            else{
+                console.log(JSON.parse(res.data.ResponseText))
+                onChangeSRA(JSON.parse(res.data.ResponseText))
+            }
+            //console.log("Now ResA is : "+res.data.ResponseText)
+        
+        }).catch((error) =>{
+        
+            console.log("Api call error : Get Result error with "+error);
+            //Alert.alert("Employer ID not found");
+        
+        })
+        
+    }
+}
+
+
 const TimeTable=()=>{
 
-    const [EmID, onChangeEmID] = React.useState("");
-    const [SearchResult,onChangeSR] = React.useState("");
-    const [EntryList,onChangeEL] = React.useState([]);
-    const [isLocked,onChangeIL] = React.useState(true);
+    const userEmail = useStoreState(state => state.userEmail);
+    const EmID = useStoreState(state => state.EmID)
+    const [SearchResultArray,onChangeSRA] = React.useState([]);
 
     return (
-        <ScrollView>
-            {/*
-            <View>
-                <Text/>
-                <Text style={{textAlign:"center"}} >This is Time table screen</Text>
-            </View>
-            */}
+        <ScrollView contentContainerStyle={{flexGrow: 1}}>
 
-            <Text style={styles.UsernameLabel}>Insert Employer ID here</Text>
-
-            <TextInput
-              style={styles.input}
-              placeholder={"Employer ID"}
-              onChangeText={EmID => onChangeEmID(EmID)}
-              value={EmID}
-            />
-
-
-            <View style={styles.Button}>
-                <Button
-                    title="Search"
-                    onPress={() => {
-                        onChangeIL(true)
-                        let api = "http://api-intranet.dga.or.th/absentv1/GetAbsentDate.ashx?empID="+EmID
-                        axios.get(api).then(res => {
-
-                            onChangeSR(res.data.ResponseText)
-                            console.log(JSON.stringify(JSON.parse(res.data.ResponseText)))
-
-
-                            if(res.data.ResponseText!="ไม่พบรายการ"){
-                                onChangeIL(false)
-                                Alert.alert("Search found! ");
-                            }
-                            else{
-                                Alert.alert("Employer ID not found");
-                            }
-                            console.log(res.data.ResponseText)
-                            
-
-                        }).catch((error) =>{
-                            console.log("Api call error");
-                            Alert.alert("Employer ID not found");
-                        })
+            <Button
+                    title="Show Result (Press Again to Refresh)"
+                    onPress={()=>{
+                        getData(EmID,onChangeSRA);
                     }}
-                />
-            </View>
-            
-
-            <View style={styles.Button}>
-                <Button
-                    title="Show Result"
-                    onPress={() => {
-
-                        onChangeEL(SearchResult.split("},{"))
-
-                    }}
-                    disabled={isLocked}
-                />
-            </View>
-                
-            
+            />  
 
             <View style={{height:30}}/>
 
 
                 <DataTable>
-                    <DataTable.Header style={{height:80,top:20}}>
-                        <View style={{width:100,padding: 2 ,margin: 5,textAlign: "center"}}><Text>วันที่</Text></View>
-                        <View style={{width:60,padding: 2 ,margin: 5,textAlign: "center"}}><Text>เวลาเข้า-ออก</Text></View>
-                        <View style={{width:70,padding: 2 ,margin: 5,textAlign: "center"}}><Text>จำนวนที่ขาดงาน</Text></View>
-                        <View style={{width:70,padding: 2 ,margin: 5,textAlign: "center"}}><Text>หมายเหตุ</Text></View>
-                        <View style={{width:50,padding: 2 ,margin: 5,textAlign: "center"}}><Text>ลาตามระบบ</Text></View>
+                    <DataTable.Header style={{height:70,top:20}}>
+                        <View style={{width:100,padding: 2 ,margin: 5}}><Text style={{textAlign: "center"}}>วันที่</Text></View>
+                        <View style={{width:60 ,padding: 2 ,margin: 5}}><Text style={{textAlign: "center"}}>{"เวลา\n"+"เข้า-ออก"}</Text></View>
+                        <View style={{width:80 ,padding: 2 ,margin: 5}}><Text style={{textAlign: "center"}}>{"จำนวนที่\n"+"ขาดงาน"}</Text></View>
+                        <View style={{width:90 ,padding: 2 ,margin: 5}}><Text style={{textAlign: "center"}}>หมายเหตุ</Text></View>
                     </DataTable.Header>
+                
                 {   
-                    EntryList.map((item,index)=>{
-
-                        const Date = item.split('"WorkDateString":"')[1][0]=='"' ? "ไม่มีข้อมูล" : item.split('"WorkDateString":"')[1].slice(0,10)
-                        const TimeIn = item.split('CheckInDateString":"')[1][0]=='"' ? "ไม่มีข้อมูล" : item.split('CheckInDateString":"')[1].slice(11,16)
-                        const TimeOut = item.split('CheckOutDateString":"')[1][0]=='"' ? "ไม่มีข้อมูล" : item.split('CheckOutDateString":"')[1].slice(11,16)
-                        const Absent = item.split('AbsentMinute":')[1][0]=='"' ? "ไม่มีข้อมูล" : item.split('AbsentMinute":')[1].slice(0,10).split(",")[0]
+                    SearchResultArray.map((item,index)=>{
+                        const Date = item.WorkDateString=="" ? "ไม่มีระบุ" : item.WorkDateString.slice(0,10)
+                        const TimeIn = item.CheckInDateString=="" ? "ไม่ระบุ" : item.CheckInDateString.slice(11,16)
+                        const TimeOut = item.CheckOutDateString=="" ? "ไม่ระบุ" : item.CheckOutDateString.slice(11,16)
+                        const Absent = item.AbsentMinute=='0' ? "ไม่มี" : item.AbsentMinute
                         const AbsentH = (Math.floor(parseInt(Absent)/60)).toString()
                         const AbsentM = (parseInt(Absent)%60).toString()
-                        const Describe = item.split('StatusName":"')[1][0]=='"' ? "ไม่มีข้อมูล" : item.split('StatusName":"')[1].slice(0,30).split('"')[0]
-
+                        const Describe = item.StatusName=="" ? "ไม่ระบุ" : item.StatusName
                         return(
-
-                            <DataTable.Row style={{top:20,bottom:10}}>
+                            <DataTable.Row key={index} style={{top:20,bottom:10}}>
                                 <View style={{width:100,padding: 10 ,margin: 5,}}><Text>{Date}</Text></View>
-                                <View style={{width:60,padding: 10 ,margin: 5,}}><Text>{TimeIn}-{TimeOut}</Text></View>
-                                <View style={{width:65,padding: 6 ,margin: 5,}}><Text>{AbsentH>0? AbsentH+"\nชั่วโมง":""}{AbsentM>0? AbsentM+"\nนาที":""}</Text></View>
-                                <View style={{width:70,padding: 10 ,margin: 5,}}><Text style={{textAlign: "center"}}>{Describe}</Text></View>
-                                <View style={{width:50,padding: 10 ,margin: 5,}}><Text></Text></View>
+                                <View style={{width:75,padding: 10 ,margin: 5,}}><Text>{TimeIn}-{"\n"+TimeOut}</Text></View>
+                                <View style={{width:75,padding: 6 ,margin: 5,}}><Text>{Absent=="0"? Absent: (AbsentH>0? AbsentH+" ชม.\n":"" + AbsentM>0? AbsentM+" นาที":"")}</Text></View>
+                                <View style={{width:75,padding: 10 ,margin: 5,}}><Text style={{textAlign: "center"}}>{Describe}</Text></View>
                             </DataTable.Row>
                         )
                     })
+                     
                     
                 }
 
                 </DataTable>
+
+                <View style={{height:40}}/>
 
 
         </ScrollView>

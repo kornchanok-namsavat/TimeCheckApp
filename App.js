@@ -42,6 +42,10 @@ const App = () => {
     userTokenChange : action((state,payload) => {
       state.userToken = payload;
     }),
+    EmID : "",
+    EmIDChange : action((state,payload) => {
+      state.EmID = payload;
+    }),
   });
 
   return (
