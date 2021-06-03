@@ -7,18 +7,20 @@ const Profile=()=>{
 
     const isLoggedIn = useStoreState(state => state.isLoggedIn);
     const userEmail = useStoreState(state => state.userEmail);
+    const EmID = useStoreState(state => state.EmID);
     const userToken = useStoreState(state => state.userToken);
 
     return (
         <ScrollView>
             <View>
                 <Text/>
-                <Text style={{textAlign:"center"}}>This is Profile screen</Text>
+                <Text style={{fontSize : 20,textAlign:"center"}}>Profile</Text>
                 <Text/>
                 <Text/>
-                <Text>Currently LogIn as : {userEmail}</Text>
+                <Text style={{textAlign: "left"}} >    Currently LogIn as  :  {userEmail}</Text>
                 <Text/>
-                <Text>Access Token : {userToken}</Text>
+                <Text style={{textAlign: "left"}} >    Employer ID  :  {EmID}</Text>
+                {/*<Text>Access Token : {userToken}</Text>*/}
 
             </View>
         </ScrollView>

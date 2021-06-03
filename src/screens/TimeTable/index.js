@@ -16,7 +16,7 @@ function getData(EmID,onChangeSRA){
         
             if(res.data.ResponseText=="ไม่พบรายการ"){
                 console.log("ไม่พบรายการ")
-                Alert.alert("ไม่พบรายการ โปรดตรวจสอบ \nการเชื่อมต่อและลองใหม่อีกครั้ง")
+                Alert.alert("ไม่พบรายการ")
             }
             else{
                 console.log(JSON.parse(res.data.ResponseText))
@@ -27,6 +27,7 @@ function getData(EmID,onChangeSRA){
         }).catch((error) =>{
         
             console.log("Api call error : Get Result error with "+error);
+            Alert.alert("ไม่สามารถเรียกข้อมูล \n  โปรดตรวจสอบการเชื่อมต่อและลองใหม่")
             //Alert.alert("Employer ID not found");
         
         })
@@ -62,8 +63,8 @@ const TimeTable=()=>{
                         <View style={{width:90 ,padding: 2 ,margin: 5}}><Text style={{textAlign: "center"}}>หมายเหตุ</Text></View>
                     </DataTable.Header>
                 
-                {   
-                    SearchResultArray.map((item,index)=>{
+                {SearchResultArray.length>0?    
+                    (SearchResultArray.map((item,index)=>{
                         const Date = item.WorkDateString=="" ? "ไม่มีระบุ" : item.WorkDateString.slice(0,10)
                         const TimeIn = item.CheckInDateString=="" ? "ไม่ระบุ" : item.CheckInDateString.slice(11,16)
                         const TimeOut = item.CheckOutDateString=="" ? "ไม่ระบุ" : item.CheckOutDateString.slice(11,16)
@@ -79,9 +80,11 @@ const TimeTable=()=>{
                                 <View style={{width:75,padding: 10 ,margin: 5,}}><Text style={{textAlign: "center"}}>{Describe}</Text></View>
                             </DataTable.Row>
                         )
-                    })
+                    }))
                      
-                    
+                    :
+
+                    (<View style={{padding: 40 ,margin: 5,}}><Text style={{textAlign: "center"}} >แตะที่ Show result เพื่อโหลดรายการ</Text></View>)
                 }
 
                 </DataTable>

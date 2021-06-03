@@ -34,29 +34,57 @@ const CheckIO=()=>{
         <ScrollView>
             <View style={{height:100}}>
                 <Text/>
-                <Text style={{textAlign:"center"}}>This is Check In or Check Out screen</Text>
+                <Text style={{fontSize : 20,textAlign:"center"}}>{"ลงชื่อเข้า-ออกงาน\n"}</Text>
+                <Text style={{textAlign:"center"}}>{"การลงชื่อเข้างานต้องทำก่อนเวลา 9.30 น.\n"+" และการลงชื่อออกงานต้องทำหลังเวลา 17.30 น."}</Text>
             </View>
 
+            <View style={{height:60}}/>
+
             <Button
-                title="Check In"
+                title="Check In / Check Out"
                 onPress={()=>{
                     let api = "http://api-intranet.dga.or.th/absentv1/GetAbsentTAD_Covid.ashx?empemail="+userEmail
                     //console.log("Now EmID is : "+EmID)
                     console.log("Try to connect api : "+api)
                     axios.get(api).then(res =>{
-                        console.log(res.data.split(","))
+                        //console.log(res.data.split(","))
                         const status = res.data.split(",")[0].split('"IsSuccess": "')[1].slice(0,4)
                         if(status=="true"){
                             const Date = res.data.split(",")[3].split(": ")[1].split(" ")[0]
                             const Time = res.data.split(",")[3].split(": ")[1].split(" ")[1].slice(0,8)
                             //console.log(Date+" : "+Time)
-                            ExecuteQuery('CREATE TABLE IF NOT EXISTS InAppUserLog (UserEmail TEXT,CheckType TEXT,Date TEXT,Time TEXT)',[]);
-                            ExecuteQuery('INSERT INTO InAppUserLog (UserEmail,CheckType,Date,Time) VALUES (?,?,?,?)',[userEmail,"Check-In",Date,Time])
-                            Alert.alert("เช็คอินสำเร็จ! \nวันที่ : ("+Date+") เวลา : ("+Time+")")
+                            ExecuteQuery('CREATE TABLE IF NOT EXISTS InAppUserLog (UserEmail TEXT,CheckType TEXT,Date TEXT,Time TEXT)',[])
+                            ExecuteQuery('SELECT * FROM InAppUserLog WHERE UserEmail=(?) AND Date=(?)',[userEmail,Date]).then((x)=>{
+                               if(x.rows.length==0 ){
+                                    if((parseInt(Time.slice(0,2))<9) || ((parseInt(Time.slice(0,2))==9) && (parseInt(Time.slice(3,5))<30))){
+                                        ExecuteQuery('INSERT INTO InAppUserLog (UserEmail,CheckType,Date,Time) VALUES (?,?,?,?)',[userEmail,"Check-In",Date,Time])
+                                        Alert.alert("ลงชื่อเข้างานสำเร็จ! \nวันที่ : ("+Date+") เวลา : ("+Time+")")
+                                    }
+                                    else{
+                                        Alert.alert("ลงชื่อเข้างานล้มเหลว! \n  ไม่สามารถลงชื่อเข้างานหลัง 9.30 น.")
+                                    }
+                               }
+                               else if(x.rows.length==1){
+                                    if((parseInt(Time.slice(0,2))==17) && (parseInt(Time.slice(3,5))>=30) || (parseInt(Time.slice(0,2))>17)){
+                                        ExecuteQuery('INSERT INTO InAppUserLog (UserEmail,CheckType,Date,Time) VALUES (?,?,?,?)',[userEmail,"Check-Out",Date,Time])
+                                        Alert.alert("ลงชื่อออกงานสำเร็จ! \nวันที่ : ("+Date+") เวลา : ("+Time+")")
+                                    }
+                                    else{
+                                        console.log( parseInt(Time.slice(0,2)) +" "+ (parseInt(Time.slice(3,5))) )
+                                        Alert.alert("ลงชื่อออกงานล้มเหลว! \n  ไม่สามารถลงชื่อออกงานก่อน 17.30 น.")
+                                    }
+                               }
+                               else{
+                                    Alert.alert("ลงชื่อล้มเหลว! \n  ผู้ใช้ได้ลงชื่อออกงานไปแล้ว")
+                               }
+                            })
+                            //ExecuteQuery('INSERT INTO InAppUserLog (UserEmail,CheckType,Date,Time) VALUES (?,?,?,?)',[userEmail,"Check-In",Date,Time])
+                            //Alert.alert("ลงชื่อสำเร็จ! \nวันที่ : ("+Date+") เวลา : ("+Time+")")
                         }
                         else{
-                            Alert.alert("เช็คอินล้มเหลว! กรุณาลองใหม่ภายหลัง \nวันที่ : ("+Date+") เวลา : ("+Time+")")
+                            Alert.alert("ลงชื่อล้มเหลว! กรุณาลองใหม่ภายหลัง \nวันที่ : ("+Date+") เวลา : ("+Time+")")
                         }
+                        console.log("Connecting success!")
                     
                     }).catch((error) =>{
                     
@@ -74,9 +102,14 @@ const CheckIO=()=>{
                     onChangeSRA([])
                     onChangeHideHeader(true)
                     ExecuteQuery('SELECT * FROM InAppUserLog WHERE UserEmail=(?)',[userEmail]).then((x)=>{
-                        //console.log(x.rows._array)
                         onChangeSRA(x.rows._array)
-                        onChangeHideHeader(false)
+                        if(x.rows.length>0){
+                            console.log(x.rows)
+                            onChangeHideHeader(false)
+                        }
+                        else{
+                            console.log("No data!")
+                        }
                     });
                 }}
             />
